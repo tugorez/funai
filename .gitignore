@@ -1,0 +1,8 @@
+.venv
+*.img
+*.jpg
+*.jpeg
+*.png
+*.mat
+*.webp
+*.pkl
