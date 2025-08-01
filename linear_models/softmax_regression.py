@@ -11,7 +11,7 @@ class SoftmaxRegression:
 
     def __call__(self, x):
         p = self._predict(x)
-        # tugorez@
+        # Each entry has a probability for each class so we pick the index of the one with the MAX.
         return np.argmax(p, axis = 1)
 
     def __str__(self):
@@ -19,11 +19,10 @@ class SoftmaxRegression:
     
     def _predict(self, x):
         linear = x @ self.weights + self.bias
-        # tugorez@
-        exp_scores = np.exp(linear - np.max(linear, axis=1, keepdims=True)) # <-- CHANGED
-        return exp_scores / np.sum(exp_scores, axis=1, keepdims=True) # <-- CHANGED
+        exp_scores = np.exp(linear - np.max(linear, axis=1, keepdims=True))
+        return exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
     
-    def train(self, x, y, epoch = 1000, learning_rate = 1e-1):
+    def train(self, x, y, epoch = 1000, learning_rate = 1e-3):
         num_samples = x.shape[0]
         last_loss = np.inf
 
@@ -43,7 +42,6 @@ class SoftmaxRegression:
             self.weights -= learning_rate * grad_w
             self.bias -= learning_rate * grad_b
             
-            # tugorez@
             loss = -np.mean(np.sum(y * np.log(p +  1e-9), axis = 1))
 
             # If it does not improve, halt the training process.
@@ -81,15 +79,17 @@ if __name__ == '__main__':
 
     print('Training the model')
     model = SoftmaxRegression(input_dim = 3, num_classes = len(color_vectors))
-    model.train(x, y)
+    model.train(x, y, epoch = 2000, learning_rate = 1e1)
 
     # Test the model
     print("--- Making Predictions ---")
     tests = np.array([
-        [240, 20, 10],   # A very reddish color
-        [10, 250, 15],   # A very greenish color
-        [240, 250, 20],  # A very yellowish color
-        [150, 30, 140]   # A purplish color
+        [240, 20, 10],  # A very reddish color
+        [10, 250, 15],  # A very greenish color
+        [240, 250, 20], # A very yellowish color
+        [150, 30, 140], # A purplish color,
+        [118, 65, 217], # Another purple like color
+        [224, 190, 20], # A Yellowish color
     ]) / 255
     
     predictions = model(tests)

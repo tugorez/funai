@@ -42,7 +42,6 @@ class LogisticRegression:
             self.weights -= learning_rate * grad_w
             self.bias -= learning_rate * grad_b
             
-            # tugorez@
             loss = -np.mean(y * np.log(p +  1e-9) + (1 - y) * np.log(1 - p +  1e-9))
 
             # If it does not improve, halt the training process.
