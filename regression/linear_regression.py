@@ -20,6 +20,7 @@ class LinearRegression:
     
     def train(self, x, y, epoch = 1000, learning_rate = 1e-1):
         num_samples = x.shape[0]
+        last_loss = np.inf
 
         for i in range(epoch):
             # Step 1: Predict
@@ -37,15 +38,27 @@ class LinearRegression:
             self.weights -= learning_rate * grad_w
             self.bias -= learning_rate * grad_b
             
-            if i % 10 == 0:
-                loss = np.sum(e ** 2) / num_samples
-                print(f'Loss {loss:.4f}')
+            loss = np.sum(e ** 2) / num_samples
+
+            # If it does not improve, halt the training process.
+            if (last_loss - loss) == 0:
+                print(f'({i}/{epoch}) Function is optimized, loss was not improved. Done.')
+                return
+            else:
+                last_loss = loss
+        
+            # Always print the first and the last iteration.
+            if i % 10 == 0 or i == epoch - 1:
+                print(f'({i}/{epoch}) Loss {loss:.8f}')
 
 if __name__ == '__main__':
-    x = np.arange(-1, 2, 0.0001).reshape(-1, 1)
+    x = np.arange(-1, 1, 0.1).reshape(-1, 1)
     y = 3 * x + 10
 
     lr = LinearRegression(input_dim = 1, output_dim = 1)
     lr.train(x, y)
 
-    print(lr.weights, lr.bias)
+    print(f'm = {lr.weights}, b = {lr.bias}')
+
+    results = lr([[30], [40]])
+    print(results)
