@@ -6,8 +6,8 @@ class LinearRegression:
         self.input_dim = input_dim
         self.output_dim = output_dim
 
-        self.weights = np.random.rand(input_dim, output_dim)
-        self.bias = np.random.rand(1, output_dim)
+        self.weights = np.random.rand(input_dim, self.output_dim)
+        self.bias = np.random.rand(1, self.output_dim)
 
     def __call__(self, x):
         return self._predict(x)
