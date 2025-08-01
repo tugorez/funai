@@ -2,6 +2,8 @@ import numpy as np
 
 class LogisticRegression:
     def __init__(self, input_dim, num_classes, name = 'LogisticRegression'):
+        if (num_classes != 1):
+            raise ValueError('This is a binary classification model. `num_classes` must be one.')
         self.name = name
         self.input_dim = input_dim
         self.output_dim = num_classes
