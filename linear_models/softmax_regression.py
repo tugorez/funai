@@ -1,9 +1,7 @@
 import numpy as np
 
-class LogisticRegression:
-    def __init__(self, input_dim, num_classes, name = 'LogisticRegression'):
-        if (num_classes != 1):
-            raise ValueError('This is a binary classification model. `num_classes` must be one.')
+class SoftmaxRegression:
+    def __init__(self, input_dim, num_classes, name = 'SoftmaxRegression'):
         self.name = name
         self.input_dim = input_dim
         self.output_dim = num_classes
@@ -11,16 +9,19 @@ class LogisticRegression:
         self.weights = np.random.rand(input_dim, self.output_dim)
         self.bias = np.random.rand(1, self.output_dim)
 
-    def __call__(self, x, threshold = 0.5):
+    def __call__(self, x):
         p = self._predict(x)
-        return (p >= threshold).astype(int)
+        # tugorez@
+        return np.argmax(p, axis = 1)
 
     def __str__(self):
         return f'{self.name}({self.input_dim}, {self.output_dim})'
     
     def _predict(self, x):
         linear = x @ self.weights + self.bias
-        return 1 / (1 + np.exp(-linear))
+        # tugorez@
+        exp_scores = np.exp(linear - np.max(linear, axis=1, keepdims=True)) # <-- CHANGED
+        return exp_scores / np.sum(exp_scores, axis=1, keepdims=True) # <-- CHANGED
     
     def train(self, x, y, epoch = 1000, learning_rate = 1e-1):
         num_samples = x.shape[0]
@@ -42,7 +43,8 @@ class LogisticRegression:
             self.weights -= learning_rate * grad_w
             self.bias -= learning_rate * grad_b
             
-            loss = -np.mean(y * np.log(p +  1e-9) + (1 - y) * np.log(1 - p +  1e-9))
+            # tugorez@
+            loss = -np.mean(np.sum(y * np.log(p +  1e-9), axis = 1))
 
             # If it does not improve, halt the training process.
             if (last_loss - loss) == 0:
@@ -56,18 +58,41 @@ class LogisticRegression:
                 print(f'({i}/{epoch}) Loss {loss:.8f}')
 
 if __name__ == '__main__':
-    x = np.random.randint(0, 256, size=(200, 1))
-    y =  (x >= 128).astype(int)
-    x = x / 255.0
+    color_options = ['red', 'green', 'blue', 'yellow', 'purple', 'cyan']
+    color_vectors = np.array([
+        [255, 0, 0],    # Red
+        [0, 255, 0],    # Green
+        [0, 0, 255],    # Blue
+        [255, 255, 0],  # Yellow
+        [128, 0, 128],  # Purple
+        [0, 255, 255],  # Cyan
+    ])
+    num_samples_per_color = 50
+    x, y = [], []
+    for i, base_color in enumerate(color_vectors):
+        # Generate 50 vectors that will be added to each one of the base colors above.
+        base_color_deltas = np.random.randint(-50, 50, size = (num_samples_per_color, 3))
+        base_color_samples = np.clip(base_color + base_color_deltas, 0, 255)
+        x.append(base_color)
+        x.extend(base_color_samples)
+        y.extend([i] * (num_samples_per_color + 1))
+    x = np.array(x) / 255
+    y = np.eye(len(color_vectors))[y]
 
-    lr = LogisticRegression(input_dim = 1, num_classes = 1)
-    lr.train(x, y)
+    print('Training the model')
+    model = SoftmaxRegression(input_dim = 3, num_classes = len(color_vectors))
+    model.train(x, y)
 
-    print("\n--- Making Predictions ---")
-    test_values = np.array([[30], [110], [128], [150], [245]]) / 255.0
-    predictions = lr(test_values)
-    label_map = {0: "Dark ⚫️", 1: "Light ⚪️"}
-
-    for i, value in enumerate(test_values):
-        prediction_label = label_map[predictions[i][0]]
-        print(f"Grayscale value {value[0] * 255} is classified as: {prediction_label}")
+    # Test the model
+    print("--- Making Predictions ---")
+    tests = np.array([
+        [240, 20, 10],   # A very reddish color
+        [10, 250, 15],   # A very greenish color
+        [240, 250, 20],  # A very yellowish color
+        [150, 30, 140]   # A purplish color
+    ]) / 255
+    
+    predictions = model(tests)
+    for i, rgb in enumerate(predictions):
+        predicted_color_name = color_options[predictions[i]]
+        print(f"RGB{rgb} was classified as: {predicted_color_name}")

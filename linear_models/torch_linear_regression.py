@@ -55,10 +55,10 @@ if __name__ == '__main__':
     x = np.arange(-1, 1, 0.1).reshape(-1, 1)
     y = 3 * x + 10
 
-    lr = LinearRegression(input_dim = 1, output_dim = 1)
-    lr.train(x, y)
+    model = LinearRegression(input_dim = 1, output_dim = 1)
+    model.train(x, y)
 
-    print(f'm = {lr.weights}, b = {lr.bias}')
+    print(f'm = {model.weights}, b = {model.bias}')
 
-    results = lr([[30], [40]])
+    results = model([[30], [40]])
     print(results)

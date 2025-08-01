@@ -42,6 +42,7 @@ class LogisticRegression:
             self.weights -= learning_rate * grad_w
             self.bias -= learning_rate * grad_b
             
+            # tugorez@
             loss = -np.mean(y * np.log(p +  1e-9) + (1 - y) * np.log(1 - p +  1e-9))
 
             # If it does not improve, halt the training process.
@@ -60,12 +61,12 @@ if __name__ == '__main__':
     y =  (x >= 128).astype(int)
     x = x / 255.0
 
-    lr = LogisticRegression(input_dim = 1, num_classes = 1)
-    lr.train(x, y)
+    model = LogisticRegression(input_dim = 1, num_classes = 1)
+    model.train(x, y)
 
     print("\n--- Making Predictions ---")
     test_values = np.array([[30], [110], [128], [150], [245]]) / 255.0
-    predictions = lr(test_values)
+    predictions = model(test_values)
     label_map = {0: "Dark ⚫️", 1: "Light ⚪️"}
 
     for i, value in enumerate(test_values):
