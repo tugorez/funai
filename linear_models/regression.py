@@ -22,11 +22,11 @@ class Regression:
         linear_output = x @ self.weights + self.bias
         return self.activation_fn(linear_output)
     
-    def train(self, x, y, epochs = 2000, learning_rate = 1e-1):
+    def train(self, x, y, epochs = 1000, learning_rate = 1e-1):
         num_samples = x.shape[0]
         last_loss = np.inf
  
-        for epoch in range(1, epochs + 1):
+        for epoch in range(epochs):
             p = self._predict(x)
 
             error = self.loss_fn.gradient(y, p)
@@ -39,10 +39,10 @@ class Regression:
             loss = self.loss_fn.loss(y, p)
 
             if np.isclose(last_loss, loss, atol = 1e-7):
-                print(f'({epoch}/{epochs}) Loss converged. Done.')
+                print(f'({epoch + 1}/{epochs}) Loss converged. Done.')
                 break
             else:
                 last_loss = loss
             
             if epoch % (epochs // 10) == 0 or epoch == epochs - 1:
-                print(f'({epoch}/{epochs}) Loss: {loss:.8f}')
+                print(f'({epoch + 1}/{epochs}) Loss: {loss:.2f}')
