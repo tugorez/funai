@@ -1,5 +1,6 @@
 import numpy as np
 from regression import Regression
+from optimizers import SGD
 
 class CategoricalCrossEntropy:
     def loss(self, y_true, y_pred):
@@ -44,6 +45,7 @@ if __name__ == '__main__':
         output_dim=num_classes,
         loss_fn=CategoricalCrossEntropy(),
         activation_fn=softmax,
+        optimizer=SGD(),
         name='SoftmaxRegression'
     )
     model.train(x, y, epochs=2000, learning_rate=1.0)

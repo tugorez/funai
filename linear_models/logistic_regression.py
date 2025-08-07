@@ -1,5 +1,6 @@
 import numpy as np
 from regression import Regression
+from optimizers import SGD
 
 class BinaryCrossEntropy:
     def loss(self, y_true, y_pred):
@@ -10,6 +11,7 @@ class BinaryCrossEntropy:
     def gradient(self, y_true, y_pred):
         return y_pred - y_true
 
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -18,7 +20,7 @@ if __name__ == '__main__':
     y =  (x >= 128).astype(int)
     x = x / 255.0
 
-    model = Regression(input_dim=1, output_dim=1, loss_fn=BinaryCrossEntropy(), activation_fn=sigmoid)
+    model = Regression(input_dim=1, output_dim=1, loss_fn=BinaryCrossEntropy(), activation_fn=sigmoid, optimizer=SGD())
     model.train(x, y)
 
     print("\n--- Making Predictions ---")

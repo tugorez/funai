@@ -1,13 +1,14 @@
 import numpy as np
 
 class Regression:
-    def __init__(self, input_dim, output_dim, loss_fn, activation_fn, name='Regression'):
+    def __init__(self, input_dim, output_dim, loss_fn, activation_fn, optimizer, name='Regression'):
         self.name = name
         self.input_dim = input_dim
         self.output_dim = output_dim
 
         self.loss_fn = loss_fn
         self.activation_fn = activation_fn
+        self.optimizer = optimizer
 
         self.weights = np.random.randn(self.input_dim, self.output_dim) * 1e-2
         self.bias = np.random.randn(1, self.output_dim)
@@ -33,8 +34,12 @@ class Regression:
             weights_gradient = (1 / num_samples) * (x.T @ error)
             bias_gradient = (1 / num_samples) * np.sum(error, axis=0, keepdims=True)
 
-            self.weights -= learning_rate * weights_gradient
-            self.bias -= learning_rate * bias_gradient
+            self.optimizer.step(
+                weights = self.weights,
+                bias = self.bias,
+                weights_gradient = weights_gradient,
+                bias_gradient = bias_gradient
+            )
 
             loss = self.loss_fn.loss(y, p)
 

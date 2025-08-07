@@ -1,5 +1,6 @@
 import numpy as np
 from regression import Regression
+from optimizers import SGD
 
 
 class MeanSquaredError:
@@ -18,7 +19,7 @@ if __name__ == '__main__':
 
     loss_fn = MeanSquaredError()
     activation_fn = identity
-    model = Regression(input_dim = 1, output_dim = 1, loss_fn = loss_fn, activation_fn=activation_fn)
+    model = Regression(input_dim = 1, output_dim = 1, loss_fn = loss_fn, activation_fn=activation_fn, optimizer=SGD())
     model.train(x, y)
 
     print(f'Learned Parameters: slope (w) = {model.weights[0][0]:.4f}, intercept (b) = {model.bias[0][0]:.4f}')
